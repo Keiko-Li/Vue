@@ -5,7 +5,7 @@ import './assets/css/global.css'
 // import qs from 'qs'
 import ElementUI from 'element-ui'
 // import 'element-ui/lib/theme-chalk/index.css' // 引用全部样式
-import './plugins/element' // 按需引入样式
+import './plugins/element.js' // 按需引入样式
 import './assets/fonts/iconfont.css'
 import axios from 'axios'
 import VueAxios from 'vue-axios'

@@ -14,6 +14,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
+    "component": "^1.1.0",
     "element-ui": "^2.15.5",
     "less-loader": "^5.0.0",
     "qs": "^6.10.1",
