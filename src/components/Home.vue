@@ -48,9 +48,7 @@
         </el-header>
         <el-main>
           <!-- 路由占位符 -->
-          <router-view>
-
-          </router-view>
+          <router-view></router-view>
         </el-main>
       </el-container>
     </el-container>

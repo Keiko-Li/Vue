@@ -4,7 +4,6 @@ import {
   Form,
   FormItem,
   Input,
-  Row,
   Message,
   Header,
   Container,
@@ -15,7 +14,11 @@ import {
   MenuItem,
   Breadcrumb,
   BreadcrumbItem,
-  Card
+  Card,
+  Col,
+  Row,
+  Table,
+  TableColumn
 } from 'element-ui'
 
 Vue.use(
@@ -23,7 +26,6 @@ Vue.use(
   Form,
   FormItem,
   Input,
-  Row,
   Container,
   Header,
   Aside,
@@ -33,7 +35,11 @@ Vue.use(
   MenuItem,
   Breadcrumb,
   BreadcrumbItem,
-  Card
+  Card,
+  Col,
+  Row,
+  Table,
+  TableColumn
 )
 // 挂载vue原型上的属性.$name(挂载引用名)=属性名(原引用属性名)
 Vue.prototype.$message = Message
