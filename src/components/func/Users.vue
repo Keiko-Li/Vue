@@ -13,24 +13,24 @@
           </el-col>
         </el-row>
       </div>
-      <div>
+      <div class="message">
         <el-table :data="userlist" border stripe>
           <el-table-column type="index"></el-table-column>
           <el-table-column prop="username" label="Name"></el-table-column>
           <el-table-column prop="email" label="E-mail"></el-table-column>
           <el-table-column prop="mobile" label="Tel"></el-table-column>
           <el-table-column prop="role_name" label="Roles"></el-table-column>
-          <!--  -->
+          <!-- 用户状态修改与保持 -->
           <el-table-column prop="mg_state" label="State">
             <template slot-scope="scope">
               <el-switch v-model="scope.row.mg_state" @change="userStateChanged(scope.row)"></el-switch>
             </template>
           </el-table-column>
-          <!--  -->
-          <el-table-column label="Edit" width="190px">
-            <template>
-              <el-button type="primary" icon="el-icon-edit" size="mini"></el-button>
-              <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+          <!-- 操作台部分 -->
+          <el-table-column label="Operation" width="190px">
+            <template slot-scope="scope">
+              <el-button type="primary" icon="el-icon-edit" size="mini" @click="editUser(scope.row.id)"></el-button>
+              <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteUser(scope.row.id)"></el-button>
               <el-button type="info" icon="el-icon-setting" size="mini"></el-button>
             </template>
           </el-table-column>
@@ -50,8 +50,8 @@
     </el-card>
 
     <!-- add user form -->
-    <el-dialog title="ADD USER" :visible.sync="addFormVisible" width="50%">
-      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="70px">
+    <el-dialog title="ADD USER" :visible.sync="addFormVisible" width="50%" @close="addDialogClosed">
+      <el-form :model="addForm" :rules="addFormRules" ref="addFormRef" label-width="65px" label-position="left">
         <el-form-item label="Name" prop="username">
           <el-input v-model="addForm.username"></el-input>
         </el-form-item>
@@ -66,8 +66,26 @@
         </el-form-item>
       </el-form>
       <div slot="footer">
-        <el-button @click="dialogFormVisible = false">Quit</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">Submit</el-button>
+        <el-button @click="addFormVisible = false">Quit</el-button>
+        <el-button type="primary" @click="addUser">Submit</el-button>
+      </div>
+    </el-dialog>
+    <!-- edit user form -->
+    <el-dialog title="EDIT USER" :visible.sync="editFormVisible" width="50%" @close="editDialogClosed">
+      <el-form :model="editForm" :rules="addFormRules" ref="editFormRef" label-width="65px" label-position="left">
+        <el-form-item label="Name">
+          <el-input v-model="editForm.username" disabled></el-input>
+        </el-form-item>
+        <el-form-item label="Email" prop="email">
+          <el-input v-model="editForm.email"></el-input>
+        </el-form-item>
+        <el-form-item label="Tel." prop="mobile">
+          <el-input v-model="editForm.mobile"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button @click="editFormVisible = false">Quit</el-button>
+        <el-button type="primary" @click="editUserInfo()">Submit</el-button>
       </div>
     </el-dialog>
   </div>
@@ -76,6 +94,27 @@
 <script>
 export default {
   data () {
+    // 校验 email
+    var checkEmail = (rule, value, callback) => {
+      const regEmail = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-+.]\w+)*$/
+      if (!value) return callback(new Error("don't none"))
+      if (regEmail.test(value)) return callback()
+      callback(new Error('please enter a valid value'))
+    }
+    // 校验 Mobile
+    var checkMobile = (rule, value, callback) => {
+      const regMobile = /^(0|86|17951)?([0-9]{11,12})/
+      if (!value) return callback(new Error("don't none"))
+      if (regMobile.test(value)) return callback()
+      callback(new Error('please enter a valid value'))
+    }
+    // 校验 passWord
+    var checkPassword = (rule, value, callback) => {
+      const regPassword = /^[a-zA-Z]\w+$/
+      if (!value) return callback(new Error("don't none"))
+      if (regPassword.test(value)) return callback()
+      callback(new Error('please enter a valid value'))
+    }
     return {
       queryInfo: {
         query: '',
@@ -91,11 +130,7 @@ export default {
         username: '',
         password: '',
         email: '',
-        mobile: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+        mobile: ''
       },
       // form rules
       addFormRules: {
@@ -105,17 +140,20 @@ export default {
         ],
         password: [
           {required: true, message: 'please input password', trigger: 'blur'},
-          {min: 6, max: 15, message: '6~16,number,@! and a~z', trigger: 'blur'}
+          {min: 6, max: 15, message: '6~16,number,@! and a~z', trigger: 'blur'},
+          {validator: checkPassword, trigger: 'blur'}
         ],
         email: [
           {required: true, message: '', trigger: 'blur'},
-          {required: true, message: '', trigger: 'blur'}
+          {validator: checkEmail, trigger: 'blur'}
         ],
         mobile: [
           {required: true, message: '', trigger: 'blur'},
-          {required: true, message: '', trigger: 'blur'}
+          {validator: checkMobile, trigger: 'blur'}
         ]
-      }
+      },
+      editFormVisible: false,
+      editForm: {}
     }
   },
   created () {
@@ -155,6 +193,86 @@ export default {
         })
         .catch((error) => {
           console.log(error)
+        })
+    },
+    // 监听添加用户对话框的关闭事件
+    addDialogClosed () {
+      this.$refs.addFormRef.resetFields()
+    },
+    // 添加用户表单预校验
+    addUser () {
+      this.$refs.addFormRef.validate(async valid => {
+        if (!valid) return false
+        await this.axios.post('http://127.0.0.1:8888/api/private/v1/users', this.addForm)
+          .then(({data: res}) => {
+            if (res.meta.status !== 201) this.$message.error('add user default')
+            this.$message.success('add user success')
+            // 隐藏添加用户的对话框
+            this.addFormVisible = false
+            // 重新获取用户添加列表数据
+            this.getUserList()
+          }).catch(() => {
+
+          })
+      })
+    },
+    // 修改用户表单预校验
+    async editUser (id) {
+      this.editFormVisible = true
+      await this.axios.get('http://127.0.0.1:8888/api/private/v1/users/' + id)
+        .then(({data: res}) => {
+          if (res.meta.status !== 200) return this.$message.error("don't get any values")
+          this.$message.success('successful!')
+          this.editForm = res.data
+        })
+    },
+    // 监听修改用户数据对话框关闭事件
+    editDialogClosed () {
+      this.$refs.editFormRef.ressetFields()
+    },
+    // 提交修改表单
+    editUserInfo () {
+      this.$refs.editFormRef.validate(async valid => {
+        if (!valid) return false
+        await this.axios.put('http://127.0.0.1:8888/api/private/v1/users/' + this.editForm.id,
+          {
+            email: this.editForm.email,
+            mobile: this.editForm.mobile
+          })
+          .then(({data: res}) => {
+            if (res.meta.status !== 200) return this.$message.error('edit user default')
+            // 隐藏添加用户的对话框
+            this.editFormVisible = false
+            // 重新获取用户添加列表数据
+            this.getUserList()
+            this.$message.success('edit user success')
+          })
+      })
+    },
+    // 删除用户数据
+    deleteUser (id) {
+      this.$confirm('此操作将删除该用户的所有数据，是否继续？', '提示', {
+        confirmButtontext: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(async () => {
+          await this.axios.delete('http://127.0.0.1:8888/api/private/v1/users/' + id)
+            .then(({data: res}) => {
+              console.log('111')
+              if (res.meta.status !== 200) return this.$message.error('delete default!')
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              })
+              this.getUserList()
+            })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
         })
     }
   }

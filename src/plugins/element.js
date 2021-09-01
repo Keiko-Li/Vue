@@ -18,7 +18,9 @@ import {
   Col,
   Row,
   Table,
-  TableColumn
+  TableColumn,
+  Dialog,
+  MessageBox
 } from 'element-ui'
 
 Vue.use(
@@ -39,7 +41,9 @@ Vue.use(
   Col,
   Row,
   Table,
-  TableColumn
+  TableColumn,
+  Dialog
 )
 // 挂载vue原型上的属性.$name(挂载引用名)=属性名(原引用属性名)
 Vue.prototype.$message = Message
+Vue.prototype.$confirm = MessageBox.confirm
