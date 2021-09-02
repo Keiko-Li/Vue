@@ -211,8 +211,9 @@ export default {
             this.addFormVisible = false
             // 重新获取用户添加列表数据
             this.getUserList()
-          }).catch(() => {
-
+          })
+          .catch((error) => {
+            console.log(error)
           })
       })
     },
@@ -222,7 +223,6 @@ export default {
       await this.axios.get('http://127.0.0.1:8888/api/private/v1/users/' + id)
         .then(({data: res}) => {
           if (res.meta.status !== 200) return this.$message.error("don't get any values")
-          this.$message.success('successful!')
           this.editForm = res.data
         })
     },
@@ -250,16 +250,15 @@ export default {
       })
     },
     // 删除用户数据
-    deleteUser (id) {
-      this.$confirm('此操作将删除该用户的所有数据，是否继续？', '提示', {
-        confirmButtontext: '确定',
-        cancelButtonText: '取消',
+    async deleteUser (id) {
+      await this.$confirm('This operation will delete all data of this user. Do you want to continue?', 'Attention', {
+        confirmButtonText: 'Sure',
+        cancelButtonText: 'Cancel',
         type: 'warning'
       })
         .then(async () => {
           await this.axios.delete('http://127.0.0.1:8888/api/private/v1/users/' + id)
             .then(({data: res}) => {
-              console.log('111')
               if (res.meta.status !== 200) return this.$message.error('delete default!')
               this.$message({
                 type: 'success',
@@ -271,7 +270,7 @@ export default {
         .catch(() => {
           this.$message({
             type: 'info',
-            message: '已取消删除'
+            message: 'delete cancel'
           })
         })
     }
