@@ -31,7 +31,7 @@
             <template slot-scope="scope">
               <el-button type="primary" icon="el-icon-edit" size="mini" @click="editUser(scope.row.id)"></el-button>
               <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteUser(scope.row.id)"></el-button>
-              <el-button type="info" icon="el-icon-setting" size="mini"></el-button>
+              <el-button type="info" icon="el-icon-setting" size="mini" @click="setRole(scope.row)"></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -86,6 +86,22 @@
       <div slot="footer">
         <el-button @click="editFormVisible = false">Quit</el-button>
         <el-button type="primary" @click="editUserInfo()">Submit</el-button>
+      </div>
+    </el-dialog>
+    <!-- edit role -->
+    <el-dialog title="EDIT ROLE" :visible.sync="roleFormVisible" width="50%" @close="roleDialogClosed">
+      <el-form :model="userInfo" label-width="85px" ref="roleFormRef" label-position="right">
+        <el-form-item label="userName:">{{userInfo.username}}</el-form-item>
+        <el-form-item label="nowRoles:">{{userInfo.role_name}}</el-form-item>
+        <el-form-item label="newRoles:">
+          <el-select v-model="selectRoleId" placeholder="Please select">
+            <el-option v-for="item in rolesList" :key="item.id" :label="item.roleName" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button @click="roleFormVisible = false">Quit</el-button>
+        <el-button type="primary" @click="editRoleInfo()">Submit</el-button>
       </div>
     </el-dialog>
   </div>
@@ -153,7 +169,14 @@ export default {
         ]
       },
       editFormVisible: false,
-      editForm: {}
+      editForm: {},
+      roleFormVisible: false,
+      // 需要分配角色的用户信息
+      userInfo: {},
+      // 所有角色的数据列表
+      rolesList: [],
+      // 已经选中的角色 Id 植
+      selectRoleId: ''
     }
   },
   created () {
@@ -272,6 +295,38 @@ export default {
             type: 'info',
             message: 'delete cancel'
           })
+        })
+    },
+    // 角色分配表单
+    async setRole (item) {
+      this.roleFormVisible = true
+      this.userInfo = item
+      // 获取角色列表
+      await this.axios.get('http://127.0.0.1:8888/api/private/v1/roles')
+        .then(({data: res}) => {
+          if (res.meta.status !== 200) return this.$message.error('get role list default!')
+          this.rolesList = res.data
+        })
+        .catch((error) => {
+          this.$message.error(error)
+        })
+    },
+    // 监听角色选择表单关闭事件
+    roleDialogClosed () {
+      this.selectRoleId = ''
+    },
+    async editRoleInfo () {
+      if (!this.selectRoleId) return this.$message.error('please select role')
+      await this.axios.put(`http://127.0.0.1:8888/api/private/v1/users/${this.userInfo.id}/role`,
+        {
+          rid: this.selectRoleId
+        })
+        .then(({data: res}) => {
+          console.log('111')
+          if (res.meta.status !== 200) return this.$message.error('update default!')
+          this.getUserList()
+          this.$message.success('update successful!')
+          this.roleFormVisible = false
         })
     }
   }

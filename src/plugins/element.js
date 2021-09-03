@@ -20,7 +20,10 @@ import {
   Table,
   TableColumn,
   Dialog,
-  MessageBox
+  MessageBox,
+  Tree,
+  Select,
+  Option
 } from 'element-ui'
 
 Vue.use(
@@ -42,7 +45,10 @@ Vue.use(
   Row,
   Table,
   TableColumn,
-  Dialog
+  Dialog,
+  Tree,
+  Select,
+  Option
 )
 // 挂载vue原型上的属性.$name(挂载引用名)=属性名(原引用属性名)
 Vue.prototype.$message = Message
