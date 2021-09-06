@@ -21,17 +21,17 @@ const router = new Router({
     {
       path: '/home',
       component: Home,
-      redirect: '/welcome',
+      // redirect: '/welcome',
       children: [
         { path: '/welcome', component: Welcome },
-        { path: '/users', component: Users },
-        { path: '/roles', component: Roles },
-        { path: '/rights', component: Rights },
-        { path: '/reports', component: Reports },
-        { path: '/params', component: Params },
-        { path: '/orders', component: Orders },
-        { path: '/goods', component: Goods },
-        { path: '/categories', component: Categories }
+        { path: '/users', component: Users, meta: ['用户管理', '用户列表'] },
+        { path: '/rights', component: Rights, meta: ['权限管理', '角色列表'] },
+        { path: '/roles', component: Roles, meta: ['权限管理', '权限列表'] },
+        { path: '/goods', component: Goods, meta: ['商品管理', '商品列表'] },
+        { path: '/params', component: Params, meta: ['商品管理', '分类参数'] },
+        { path: '/categories', component: Categories, meta: ['商品管理', '商品分类'] },
+        { path: '/orders', component: Orders, meta: ['订单管理', '订单列表'] },
+        { path: '/reports', component: Reports, meta: ['数据统计', '数据报表'] }
       ]
     }
   ]

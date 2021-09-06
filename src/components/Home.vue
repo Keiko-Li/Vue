@@ -26,7 +26,7 @@
             :index="'/'+ subItem.path"
             v-for="subItem in item.children"
             :key="subItem.id"
-            @click="sNavSta('/'+ subItem.path)">
+            @click="sNavSta('/'+ item.path)">
               <template slot="title">
                 <span>{{subItem.authName}}</span>
               </template>
@@ -40,8 +40,8 @@
           <div>
             <el-breadcrumb separator-class="el-icon-arrow-right">
               <el-breadcrumb-item :to="{ path: '/welcome' }">首页</el-breadcrumb-item>
-              <el-breadcrumb-item>活动管理</el-breadcrumb-item>
-              <el-breadcrumb-item>活动列表</el-breadcrumb-item>
+              <el-breadcrumb-item :to="{ path: `${this.activePath}` }">{{this.$route.meta[0]}}</el-breadcrumb-item>
+              <el-breadcrumb-item>{{this.$route.meta[1]}}</el-breadcrumb-item>
             </el-breadcrumb>
             <el-button type="primary" @click="logout" class="signOut">Sign out</el-button>
           </div>
@@ -140,7 +140,6 @@ export default({
       background-color: #fff !important;
       }
     }
-    // /deep/ .el-sub
   }
   .el-main{
     background-color: #ffffff;

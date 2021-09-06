@@ -23,7 +23,8 @@ import {
   MessageBox,
   Tree,
   Select,
-  Option
+  Option,
+  Cascader
 } from 'element-ui'
 
 Vue.use(
@@ -48,7 +49,8 @@ Vue.use(
   Dialog,
   Tree,
   Select,
-  Option
+  Option,
+  Cascader
 )
 // 挂载vue原型上的属性.$name(挂载引用名)=属性名(原引用属性名)
 Vue.prototype.$message = Message
