@@ -26,9 +26,9 @@
             <el-tag v-else-if="scope.row.cat_level === 1" type="success">level 2</el-tag>
             <el-tag v-else type="warning">level 3</el-tag>
           </template>
-          <template slot="Operation">
-            <el-button type="primary" icon="el-icon-edit" size="medium">Edit</el-button>
-            <el-button type="danger" icon="el-icon-delete" size="medium">Delete</el-button>
+          <template slot="Operation" slot-scope="scope">
+            <el-button type="primary" icon="el-icon-edit" size="medium" @click="editCate(scope.row.cat_id)">Edit</el-button>
+            <el-button type="danger" icon="el-icon-delete" size="medium" @click="removeCateById(scope.row.cat_id)">Delete</el-button>
           </template>
         </tree-table>
       </div>
@@ -64,6 +64,18 @@
       <div slot="footer">
         <el-button @click="addFormVisible = false">Quit</el-button>
         <el-button type="primary" @click="addCateForm()">Submit</el-button>
+      </div>
+    </el-dialog>
+    <!-- 修改分类 -->
+    <el-dialog title="EIDT GOODS" :visible.sync="editFormVisible" width="500px" @close="editCateDialogClosed()">
+      <el-form :model="editcate" :rules="addCateRules" ref="editCateFormRef" label-width="110px" label-position="left">
+        <el-form-item label="Category:">
+          <el-input v-model="editcate.cat_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button @click="addFormVisible = false">Quit</el-button>
+        <el-button type="primary" @click="editCateForm()">Submit</el-button>
       </div>
     </el-dialog>
   </div>
@@ -109,7 +121,9 @@ export default {
         children: 'children'
       },
       // 选中的父级分类的 Id 数组
-      selectCatePid: []
+      selectCatePid: [],
+      editFormVisible: false,
+      editcate: {}
     }
   },
   created () {
@@ -177,6 +191,55 @@ export default {
             this.$message.error(error)
           })
       })
+    },
+    // 根据 Id 查询分类
+    editCate (id) {
+      this.editFormVisible = true
+      this.axios.get('http://127.0.0.1:8888/api/private/v1/categories/' + id)
+        .then(({data: res}) => {
+          if (res.meta.status !== 200) return this.$message.error('get cate default!')
+          console.log(res)
+          this.editcate = res.data
+        })
+    },
+    // 监听编辑窗口关闭
+    editCateDialogClosed () {
+      this.editcate = {}
+    },
+    editCateForm () {
+      this.$refs.editCateFormRef.validate(async valid => {
+        if (!valid) return console.log(valid)
+        await this.axios.put('http://127.0.0.1:8888/api/private/v1/categories/' + this.editcate.cat_id, { cat_name: this.editcate.cat_name })
+          .then(({data: res}) => {
+            if (res.meta.status !== 200) return this.$message.error('updata default!')
+            this.getCateList()
+            this.editFormVisible = false
+            this.$message.success('updata successful!')
+          })
+          .catch((error) => {
+            this.$message.error(error)
+          })
+      })
+    },
+    // 通过 Id 删除分类
+    async removeCateById (id) {
+      await this.$confirm('This operation will delete all data of this categories. Do you want to continue?', 'Attention', {
+        confirmButtonText: 'Sure',
+        cancelButtonText: 'Cancel',
+        type: 'warning'
+      })
+        .then(async () => {
+          this.axios.delete('http://127.0.0.1:8888/api/private/v1/categories/' + id)
+            .then(({data: res}) => {
+              if (res.meta.status !== 200) return this.$message.error('delete default!')
+              this.getCateList()
+              this.$message.success('delete successful!')
+              this.editFormVisible = false
+            })
+        })
+        .catch((error) => {
+          this.$message.error(error)
+        })
     }
   }
 }
