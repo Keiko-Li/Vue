@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import Vue from 'vue'
 import {
   Button,
@@ -24,7 +25,8 @@ import {
   Tree,
   Select,
   Option,
-  Cascader
+  Cascader,
+  Alert
 } from 'element-ui'
 
 Vue.use(
@@ -50,8 +52,8 @@ Vue.use(
   Tree,
   Select,
   Option,
-  Cascader
+  Cascader,
+  Alert
 )
-// 挂载vue原型上的属性.$name(挂载引用名)=属性名(原引用属性名)
 Vue.prototype.$message = Message
 Vue.prototype.$confirm = MessageBox.confirm

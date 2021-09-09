@@ -1,39 +1,69 @@
 <template>
     <div>
-        <el-card class="box-card">
-            <div class="text item">
-                <el-table :data="tableData" border style="width: 100%">
-                    <el-table-column prop="date" label="日期" width="180"></el-table-column>
-                    <el-table-column prop="name" label="姓名" width="180"></el-table-column>
-                    <el-table-column prop="address" label="地址"></el-table-column>
-                </el-table>
-            </div>
-        </el-card>
+      <el-card>
+        <div id="main" style="wdith: 600px; height: 400px;">111</div>
+      </el-card>
     </div>
 </template>
 
 <script>
+import echarts from 'echarts'
+import _ from 'lodash'
+
 export default {
   data () {
     return {
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      // 需要合并的数据
+      options: {
+        title: {
+          text: 'ECharts 入门示例'
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            label: {
+              backgroundColor: '#e9eef3'
+            }
+          }
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: [
+          { boundaryGap: false }
+        ],
+        yAxis: [
+          {type: 'value'}
+        ]
+      }
     }
+  },
+  created () {
+
+  },
+  // 此时，页面的元素，已经被渲染完毕了！
+  async mounted () {
+    //  3. 基于准备好的dom，初始化echarts实例
+    var myChart = echarts.init(document.getElementById('main'))
+    // 4.获取服务器数据
+    await this.axios.get('http://127.0.0.1:8888/api/private/v1/reports/type/1')
+      .then(({data: res}) => {
+        if (res.meta.status !== 200) return this.$message.error('get data default!')
+        // 4.和准备数据和配置项
+        const result = _.merge(res.data, this.options)
+        console.log(result)
+        // 5.展示数据
+        myChart.setOption(result)
+      })
+      .catch((error) => {
+        this.$message.error(error)
+      })
+  },
+  methods: {
   }
 }
 </script>

@@ -94,7 +94,7 @@ export default {
       // 商品数据列表
       catelist: [],
       // 商品总数目
-      total: '',
+      total: 0,
       columns: [
         { label: 'Categories', prop: 'cat_name' },
         { label: 'Avail', prop: 'cat_deleted', type: 'template', template: 'Avail' },
@@ -160,7 +160,6 @@ export default {
     },
     // 监听添加分类表单数据改变
     handleChange () {
-      console.log(this.selectCatePid)
       if (this.selectCatePid.length > 0) {
         this.addcate.cat_pid = this.selectCatePid[this.selectCatePid.length - 1]
         this.addcate.cat_level = this.selectCatePid.length

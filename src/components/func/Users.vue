@@ -1,10 +1,5 @@
 <template>
   <div>
-    <!-- <el-breadcrumb separator-class="el-icon-arrow-right">
-              <el-breadcrumb-item :to="{ path: '/welcome' }">首页</el-breadcrumb-item>
-              <el-breadcrumb-item>1111</el-breadcrumb-item>
-              <el-breadcrumb-item :to="{ path: this.activePath}">2222</el-breadcrumb-item>
-    </el-breadcrumb> -->
     <el-card class="box-card">
       <div class="search">
         <el-row :gutter="20">

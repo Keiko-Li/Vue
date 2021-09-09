@@ -147,4 +147,7 @@ export default({
   .iconfont {
     margin-right: 10px;
   }
+  i {
+    font-size: 25px;
+  }
 </style>
