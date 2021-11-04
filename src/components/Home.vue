@@ -141,13 +141,13 @@ export default({
       }
     }
   }
-  .el-main{
-    background-color: #fff;
-  }
-  .iconfont {
-    margin-right: 10px;
-  }
-  i {
-    font-size: 25px;
-  }
+  // .el-main{
+  //   background-color: #fff;
+  // }
+  // .iconfont {
+  //   margin-right: 10px;
+  // }
+  // i {
+  //   font-size: 25px;
+  // }
 </style>
