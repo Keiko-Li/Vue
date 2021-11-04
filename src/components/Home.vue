@@ -142,7 +142,7 @@ export default({
     }
   }
   .el-main{
-    background-color: #ffffff;
+    background-color: #fff;
   }
   .iconfont {
     margin-right: 10px;
